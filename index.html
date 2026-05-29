@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Espetteco — O verdadeiro espetinho na brasa</title>
+  <meta name="description" content="Espetteco — Carnes nobres, cerveja gelada e o melhor happy hour de Santo Amaro, Recife. Delivery e reservas.">
+  <meta property="og:title" content="Espetteco — O verdadeiro espetinho na brasa">
+  <meta property="og:description" content="Carnes nobres, cerveja gelada e o melhor happy hour de Santo Amaro, Recife.">
+  <meta property="og:image" content="2.jpg">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Espetteco — O verdadeiro espetinho na brasa">
+  <meta name="twitter:description" content="Carnes nobres, cerveja gelada e o melhor happy hour de Santo Amaro, Recife.">
+  <meta name="twitter:image" content="2.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #0c0a09;
+      color: #d6d3d1;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    @media (max-width: 768px) { body { cursor: auto; } }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; height: auto; display: block; }
+    ul { list-style: none; }
+    ::selection { background: #ea580c; color: #fafaf9; }
+
+    /* ===== CUSTOM CURSOR ===== */
+    .cursor-dot {
+      position: fixed; width: 8px; height: 8px; background: #ea580c;
+      border-radius: 50%; pointer-events: none; z-index: 99999;
+      transform: translate(-50%, -50%); transition: width 0.15s, height 0.15s;
+    }
+    .cursor-ring {
+      position: fixed; width: 40px; height: 40px; border: 2px solid #ea580c;
+      border-radius: 50%; pointer-events: none; z-index: 99998;
+      transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s, border-color 0.3s;
+    }
+    .cursor-ring.hover { width: 60px; height: 60px; border-color: #f97316; background: rgba(234,88,12,0.08); }
+
+    /* ===== VARIABLES ===== */
+    :root {
+      --bg: #0c0a09;
+      --surface: #1c1917;
+      --surface-alt: #292524;
+      --ink: #fafaf9;
+      --text: #d6d3d1;
+      --muted: #a8a29e;
+      --accent: #ea580c;
+      --accent-2: #f97316;
+      --line: #44403c;
+      --radius: 12px;
+      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ===== FLUID ISLAND NAV ===== */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; width: min(92%, 1100px);
+      background: rgba(12,10,9,0.72); backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid rgba(234,88,12,0.25);
+      border-radius: 100px; padding: 0 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transition: var(--transition);
+    }
+    .nav.scrolled { background: rgba(12,10,9,0.88); border-color: rgba(234,88,12,0.4); }
+    .nav-logo {
+      font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.2rem;
+      color: var(--ink); padding: 0 16px; letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 4px; align-items: center; }
+    .nav-links a {
+      padding: 8px 16px; border-radius: 100px; font-size: 0.82rem;
+      font-weight: 500; color: var(--muted); transition: var(--transition);
+      position: relative;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); background: rgba(234,88,12,0.12); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: var(--ink) !important; padding: 8px 20px !important;
+      border-radius: 100px !important; font-weight: 600 !important;
+    }
+    .nav-cta:hover { transform: scale(1.04); box-shadow: 0 4px 20px rgba(234,88,12,0.35); }
+    .nav-toggle {
+      display: none; background: none; border: none; color: var(--ink);
+      font-size: 1.5rem; cursor: pointer; padding: 8px 16px;
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; position: absolute; top: 64px; left: 8px; right: 8px;
+        background: rgba(12,10,9,0.95); backdrop-filter: blur(20px);
+        border: 1px solid var(--line); border-radius: 20px; padding: 12px;
+        flex-direction: column; gap: 4px;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { width: 100%; text-align: center; padding: 12px; }
+      .nav-toggle { display: block; }
+    }
+
+    /* ===== SECTIONS COMMON ===== */
+    section { padding: 100px 24px; position: relative; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-label {
+      font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.3em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Cinzel', serif; font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--ink); margin-bottom: 16px; line-height: 1.2;
+    }
+    .section-desc { color: var(--muted); max-width: 600px; line-height: 1.7; font-size: 1.05rem; }
+
+    /* ===== REVEAL ===== */
+    .reveal { opacity: 0; transform: translateY(40px); filter: blur(6px); transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .reveal.visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ===== DOUBLE-BEZEL ===== */
+    .double-bezel {
+      position: relative; border: 1px solid var(--line);
+      border-radius: var(--radius); padding: 32px 28px;
+      background: var(--surface);
+      transition: var(--transition);
+    }
+    .double-bezel::before {
+      content: ''; position: absolute; inset: 4px;
+      border: 1px solid rgba(234,88,12,0.12);
+      border-radius: calc(var(--radius) - 4px);
+      pointer-events: none;
+    }
+    .double-bezel:hover {
+      border-color: rgba(234,88,12,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(234,88,12,0.08);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; padding: 120px 24px 80px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('2.jpg') center/cover no-repeat;
+      filter: brightness(0.3) saturate(0.8);
+      transform: scale(1.05);
+    }
+    .hero-bg::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(12,10,9,0.6) 0%, rgba(12,10,9,0.85) 60%, var(--bg) 100%);
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(234,88,12,0.08) 0%, transparent 70%);
+    }
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 800px; }
+    .hero-tag {
+      display: inline-block; font-size: 0.7rem; letter-spacing: 0.3em;
+      color: var(--accent); text-transform: uppercase; font-weight: 600;
+      border: 1px solid rgba(234,88,12,0.3); border-radius: 100px;
+      padding: 6px 18px; margin-bottom: 24px;
+    }
+    .hero-title {
+      font-family: 'Cinzel', serif; font-weight: 900;
+      font-size: clamp(3rem, 8vw, 6rem); color: var(--ink);
+      line-height: 1.05; margin-bottom: 8px;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.5);
+    }
+    .hero-title span { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.3rem); color: var(--muted);
+      font-weight: 300; margin-bottom: 12px; letter-spacing: 0.02em;
+    }
+    .hero-desc {
+      font-size: 1.05rem; color: var(--text); max-width: 560px;
+      margin: 0 auto 36px; line-height: 1.7; opacity: 0.8;
+    }
+    .hero-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: var(--ink); border: none; padding: 16px 40px;
+      border-radius: 100px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: var(--transition);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .hero-btn:hover { transform: scale(1.05); box-shadow: 0 8px 32px rgba(234,88,12,0.4); }
+
+    /* ===== FIRE PARTICLES ===== */
+    .fire-particles {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      overflow: hidden;
+    }
+    .fire-particle {
+      position: absolute; bottom: 0; width: 4px; height: 4px;
+      background: var(--accent); border-radius: 50%;
+      animation: fireRise linear infinite;
+      opacity: 0;
+    }
+    @keyframes fireRise {
+      0% { transform: translateY(0) scale(1); opacity: 0.8; }
+      50% { opacity: 0.4; }
+      100% { transform: translateY(-400px) scale(0); opacity: 0; }
+    }
+
+    /* ===== HERO STATS ===== */
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      margin-top: 60px; max-width: 700px; margin-left: auto; margin-right: auto;
+    }
+    .hero-stat {
+      background: rgba(28,25,23,0.6); backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(68,64,60,0.4); border-radius: var(--radius);
+      padding: 20px 16px; text-align: center;
+    }
+    .hero-stat-num {
+      font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 700;
+      color: var(--accent); line-height: 1;
+    }
+    .hero-stat-label { font-size: 0.78rem; color: var(--muted); margin-top: 6px; }
+    @media (max-width: 560px) {
+      .hero-stats { grid-template-columns: 1fr; gap: 12px; }
+    }
+
+    /* ===== SOBRE ===== */
+    .sobre-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .sobre-img {
+      border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      width: 100%; height: 480px; object-fit: cover;
+      border: 1px solid var(--line);
+    }
+    .sobre-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--accent); border: 1px solid var(--accent);
+      padding: 12px 28px; border-radius: 100px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; transition: var(--transition);
+      margin-top: 24px; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .sobre-btn:hover { background: var(--accent); color: var(--ink); }
+    @media (max-width: 768px) {
+      .sobre-grid { grid-template-columns: 1fr; gap: 32px; }
+      .sobre-img { height: 300px; }
+    }
+
+    /* ===== DIFERENCIAIS ===== */
+    .diffs-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .diff-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(234,88,12,0.15), rgba(249,115,22,0.08));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 16px;
+    }
+    .diff-title { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--ink); margin-bottom: 8px; }
+    .diff-text { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+    @media (max-width: 768px) {
+      .diffs-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== CARDÁPIO ===== */
+    .menu-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .menu-card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); overflow: hidden;
+      transition: var(--transition);
+    }
+    .menu-card:hover { transform: translateY(-6px); border-color: rgba(234,88,12,0.3); box-shadow: 0 12px 40px rgba(234,88,12,0.08); }
+    .menu-card-img {
+      width: 100%; height: 200px; object-fit: cover;
+      border-bottom: 1px solid var(--line);
+    }
+    .menu-card-body { padding: 20px; }
+    .menu-card-name { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--ink); margin-bottom: 6px; }
+    .menu-card-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .menu-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .menu-card-price { font-family: 'Cinzel', serif; font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+    .menu-card-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: var(--ink); border: none; padding: 8px 16px; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 600; cursor: pointer;
+      transition: var(--transition); font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .menu-card-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(234,88,12,0.3); }
+    @media (max-width: 768px) {
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .menu-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== GALERIA ===== */
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    }
+    .gallery-item {
+      position: relative; border-radius: var(--radius); overflow: hidden;
+      cursor: pointer; aspect-ratio: 4/3;
+    }
+    .gallery-item:first-child { grid-column: 1 / -1; aspect-ratio: 16/7; }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .gallery-item:hover img { transform: scale(1.08); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7) 100%);
+      opacity: 0; transition: opacity 0.4s;
+      display: flex; align-items: flex-end; padding: 20px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay span { color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+    @media (max-width: 560px) {
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:first-child { aspect-ratio: 4/3; }
+    }
+
+    /* ===== CONTATO ===== */
+    .contato-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;
+    }
+    .contato-info { display: flex; flex-direction: column; gap: 20px; }
+    .contato-item { display: flex; gap: 14px; align-items: flex-start; }
+    .contato-item-icon { font-size: 1.2rem; color: var(--accent); margin-top: 2px; }
+    .contato-item-label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .contato-item-value { font-size: 1rem; color: var(--ink); font-weight: 500; }
+    .contato-map {
+      border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--line); height: 300px;
+    }
+    .contato-map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(1) invert(0.9); }
+    .contato-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: var(--ink); border: none; padding: 16px 36px;
+      border-radius: 100px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: var(--transition); margin-top: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .contato-btn:hover { transform: scale(1.04); box-shadow: 0 8px 32px rgba(37,211,102,0.3); }
+    @media (max-width: 768px) {
+      .contato-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ===== FAQ ===== */
+    .faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: var(--radius); overflow: hidden;
+      transition: var(--transition);
+    }
+    .faq-item.open { border-color: rgba(234,88,12,0.3); }
+    .faq-question {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 24px; background: none; border: none; color: var(--ink);
+      font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      text-align: left; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .faq-question:hover { color: var(--accent); }
+    .faq-icon { font-size: 1.2rem; transition: transform 0.3s; color: var(--accent); }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 24px; color: var(--muted); font-size: 0.9rem; line-height: 1.7;
+    }
+    .faq-item.open .faq-answer { max-height: 200px; padding: 0 24px 18px; }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--surface); border-top: 1px solid var(--line);
+      padding: 60px 24px 32px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .footer-brand { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--ink); margin-bottom: 8px; }
+    .footer-brand span { color: var(--accent); }
+    .footer-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; max-width: 320px; }
+    .footer-title { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 16px; }
+    .footer-links { display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a { font-size: 0.9rem; color: var(--text); transition: var(--transition); }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-bottom {
+      max-width: 1200px; margin: 40px auto 0; padding-top: 20px;
+      border-top: 1px solid var(--line); text-align: center;
+      font-size: 0.82rem; color: var(--muted);
+    }
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    /* ===== BOTTOM WHATSAPP BAR (mobile) ===== */
+    .whatsapp-bar {
+      display: none; position: fixed; bottom: 0; left: 0; right: 0;
+      z-index: 999; background: rgba(12,10,9,0.95);
+      backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+      padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
+    .whatsapp-bar a {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: var(--ink); padding: 12px; border-radius: 100px;
+      font-weight: 700; font-size: 0.95rem;
+    }
+    @media (max-width: 768px) {
+      .whatsapp-bar { display: block; }
+      section { padding-bottom: 80px; }
+    }
+
+    /* ===== PREFERS REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      .reveal { opacity: 1; transform: none; filter: none; }
+      .hero-bg { transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav" role="navigation" aria-label="Navegação principal">
+    <div class="nav-logo">Espette<span>co</span></div>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menu de navegação" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="#sobre" aria-label="Ir para seção Sobre">Sobre</a>
+      <a href="#cardapio" aria-label="Ir para o Cardápio">Cardápio</a>
+      <a href="#ambiente" aria-label="Ir para galeria de fotos">Ambiente</a>
+      <a href="#contato" aria-label="Ir para contato">Contato</a>
+      <a href="https://wa.me/5581995776172?text=Olá!%20Vim%20pelo%20site%20do%20Espetteco%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener" class="nav-cta" aria-label="Fazer pedido pelo WhatsApp">Pedido</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero" aria-label="Seção principal">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="fire-particles" id="fireParticles" aria-hidden="true"></div>
+    <div class="hero-content">
+      <span class="hero-tag reveal">🔥 Brasa de Verdade</span>
+      <h1 class="hero-title reveal reveal-delay-1">Espette<span>co</span></h1>
+      <p class="hero-sub reveal reveal-delay-2">O verdadeiro espetinho na brasa</p>
+      <p class="hero-desc reveal reveal-delay-2">Carnes nobres, cerveja gelada e o melhor happy hour de Santo Amaro, Recife.</p>
+      <a href="https://wa.me/5581995776172?text=Olá!%20Vim%20pelo%20site%20do%20Espetteco%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener" class="hero-btn reveal reveal-delay-3" aria-label="Fazer pedido pelo WhatsApp">
+        Fazer Pedido
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+      <div class="hero-stats reveal reveal-delay-4">
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="100">0</div>
+          <div class="hero-stat-label">Churrasco na Brasa</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="12">0</div>
+          <div class="hero-stat-label">Cerveja Estupidamente Gelada</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="24">0</div>
+          <div class="hero-stat-label">Delivery Rápido</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre -->
+  <section id="sobre" aria-label="Sobre o Espetteco">
+    <div class="container">
+      <div class="sobre-grid">
+        <div class="reveal">
+          <span class="section-label">A Casa</span>
+          <h2 class="section-title">Onde a brasa encontra o sabor</h2>
+          <p class="section-desc" style="margin-bottom:16px;">
+            O <strong>Espetteco</strong> nasceu em Santo Amaro, na Rua do Pombal, ao lado do Senac — um ponto estratégico para receber amigos, famílias e profissionais que buscam o verdadeiro churrasco na brasa.
+          </p>
+          <p class="section-desc" style="margin-bottom:16px;">
+            Comandado por <strong>Silvinho</strong>, o Espetteco é mais que um point de espetinhos: é um pedaço do Recife onde a carne selecionada encontra o carvão no ponto certo, a cerveja chega estupidamente gelada e o atendimento tem aquele calor humano que só o Nordeste tem.
+          </p>
+          <p class="section-desc">
+            Seja para um happy hour depois do trabalho, um jantar em família ou aquela fome de delivery, o Espetteco é o seu lugar.
+          </p>
+          <a href="https://wa.me/5581995776172?text=Olá!%20Vim%20pelo%20site%20do%20Espetteco%20e%20quero%20saber%20mais%20sobre%20a%20história." target="_blank" rel="noopener" class="sobre-btn" aria-label="Conhecer história do Espetteco">
+            Conhecer História
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <img src="silvinho.png" alt="Silvinho, dono do Espetteco, segurando uma paella" class="sobre-img" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Diferenciais -->
+  <section id="diferenciais" aria-label="Diferenciais do Espetteco" style="background: var(--surface);">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:48px;">
+        <span class="section-label">Por que escolher</span>
+        <h2 class="section-title">Nossos Diferenciais</h2>
+      </div>
+      <div class="diffs-grid">
+        <div class="double-bezel reveal">
+          <div class="diff-icon">🔥</div>
+          <h3 class="diff-title">Brasa de Verdade</h3>
+          <p class="diff-text">Carvão vegetal selecionado, ponto exato da carne, aquele sabor defumado que só o fogo de verdade entrega.</p>
+        </div>
+        <div class="double-bezel reveal reveal-delay-1">
+          <div class="diff-icon">🥩</div>
+          <h3 class="diff-title">Cortes Selecionados</h3>
+          <p class="diff-text">Da alcatra à picanha premium, cada corte é escolhido a dedo e temperado com a receita da casa.</p>
+        </div>
+        <div class="double-bezel reveal reveal-delay-2">
+          <div class="diff-icon">🍺</div>
+          <h3 class="diff-title">Happy Hour & Delivery</h3>
+          <p class="diff-text">Promoções imperdíveis de segunda a sexta, além de delivery rápido em Santo Amaro e região.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cardápio -->
+  <section id="cardapio" aria-label="Cardápio do Espetteco">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:48px;">
+        <span class="section-label">O que oferecemos</span>
+        <h2 class="section-title">Nosso Cardápio</h2>
+        <p class="section-desc" style="margin:0 auto;">Espetinhos artesanais na brasa, preparados na hora com ingredientes selecionados.</p>
+      </div>
+      <div class="menu-grid">
+        <!-- 1 -->
+        <div class="menu-card reveal">
+          <img src="6.jpg" alt="Espetinho de carne na brasa" class="menu-card-img" loading="lazy">
+          <div class="menu-card-body">
+            <h3 class="menu-card-name">Espetinho de Carne</h3>
+            <p class="menu-card-desc">Alcatra suculenta na brasa com o tempero especial da casa.</p>
+            <div class="menu-card-footer">
+              <span class="menu-card-price">R$ 10,00</span>
+              <a href="https://wa.me/5581995776172?text=Olá!%20Quero%20pedir%20o%20Espetinho%20de%20Carne%20(R$%2010,00)." target="_blank" rel="noopener" class="menu-card-btn" aria-label="Pedir Espetinho de Carne pelo WhatsApp">Pedir</a>
+            </div>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div class="menu-card reveal reveal-delay-1">
+          <img src="3.jpg" alt="Espetinho de frango com bacon" class="menu-card-img" loading="lazy">
+          <div class="menu-card-body">
+            <h3 class="menu-card-name">Frango com Bacon</h3>
+            <p class="menu-card-desc">Peito de frango envolto em bacon crocante, grelhado na brasa.</p>
+            <div class="menu-card-footer">
+              <span class="menu-card-price">R$ 10,00</span>
+              <a href="https://wa.me/5581995776172?text=Olá!%20Quero%20pedir%20o%20Frango%20com%20Bacon%20(R$%2010,00)." target="_blank" rel="noopener" class="menu-card-btn" aria-label="Pedir Frango com Bacon pelo WhatsApp">Pedir</a>
+            </div>
+          </div>
+        </div>
+        <!-- 3 -->
+        <div class="menu-card reveal reveal-delay-2">
+          <img src="2.jpg" alt="Espetinho de queijo coalho" class="menu-card-img" loading="lazy">
+          <div class="menu-card-body">
+            <h3 class="menu-card-name">Queijo Coalho</h3>
+            <p class="menu-card-desc">Tradicional queijo coalho nordestino grelhado na brasa até dourar.</p>
+            <div class="menu-card-footer">
+              <span class="menu-card-price">R$ 10,00</span>
+              <a href="https://wa.me/5581995776172?text=Olá!%20Quero%20pedir%20o%20Queijo%20Coalho%20(R$%2010,00)." target="_blank" rel="noopener" class="menu-card-btn" aria-label="Pedir Queijo Coalho pelo WhatsApp">Pedir</a>
+            </div>
+          </div>
+        </div>
+        <!-- 4 -->
+        <div class="menu-card reveal">
+          <img src="11.jpg" alt="Pão de alho do Espetteco" class="menu-card-img" loading="lazy">
+          <div class="menu-card-body">
+            <h3 class="menu-card-name">Pão de Alho</h3>
+            <p class="menu-card-desc">Baguete recheada com creme de alho caseiro e finalizada na brasa.</p>
+            <div class="menu-card-footer">
+              <span class="menu-card-price">R$ 8,00</span>
+              <a href="https://wa.me/5581995776172?text=Olá!%20Quero%20pedir%20o%20Pão%20de%20Alho%20(R$%208,00)." target="_blank" rel="noopener" class="menu-card-btn" aria-label="Pedir Pão de Alho pelo WhatsApp">Pedir</a>
+            </div>
+          </div>
+        </div>
+        <!-- 5 -->
+        <div class="menu-card reveal reveal-delay-1">
+          <img src="6.jpg" alt="Espetinho de picanha premium" class="menu-card-img" loading="lazy">
+          <div class="menu-card-body">
+            <h3 class="menu-card-name">Picanha Premium</h3>
+            <p class="menu-card-desc">Corte nobre grelhado no carvão, servido no ponto ideal.</p>
+            <div class="menu-card-footer">
+              <span class="menu-card-price">R$ 16,00</span>
+              <a href="https://wa.me/5581995776172?text=Olá!%20Quero%20pedir%20a%20Picanha%20Premium%20(R$%2016,00)." target="_blank" rel="noopener" class="menu-card-btn" aria-label="Pedir Picanha Premium pelo WhatsApp">Pedir</a>
+            </div>
+          </div>
+        </div>
+        <!-- 6 -->
+        <div class="menu-card reveal reveal-delay-2">
+          <img src="4.jpg" alt="Cervejas Heineken geladas" class="menu-card-img" loading="lazy">
+          <div class="menu-card-body">
+            <h3 class="menu-card-name">Chopp & Cervejas</h3>
+            <p class="menu-card-desc">Heineken e outras opções estupidamente geladas para acompanhar.</p>
+            <div class="menu-card-footer">
+              <span class="menu-card-price">Consulte</span>
+              <a href="https://wa.me/5581995776172?text=Olá!%20Quero%20saber%20os%20preços%20das%20cervejas%20do%20Espetteco." target="_blank" rel="noopener" class="menu-card-btn" aria-label="Consultar preços de bebidas pelo WhatsApp">Pedir</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ambiente / Galeria -->
+  <section id="ambiente" aria-label="Galeria de fotos do ambiente" style="background: var(--surface);">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:48px;">
+        <span class="section-label">Conheça o espaço</span>
+        <h2 class="section-title">Nosso Ambiente</h2>
+        <p class="section-desc" style="margin:0 auto;">O clima aconchegante do Espetteco espera por você e sua galera.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item reveal">
+          <img src="5.jpg" alt="Fachada do Espetteco — container vermelho com logo" loading="lazy">
+          <div class="gallery-overlay"><span>🏪 Fachada do Espetteco</span></div>
+        </div>
+        <div class="gallery-item reveal reveal-delay-1">
+          <img src="7.jpg" alt="Clientes no Espetteco, ambiente descontraído" loading="lazy">
+          <div class="gallery-overlay"><span>🍽️ Clientes no ambiente</span></div>
+        </div>
+        <div class="gallery-item reveal reveal-delay-2">
+          <img src="8.jpg" alt="Clientes conversando no Espetteco" loading="lazy">
+          <div class="gallery-overlay"><span>💬 Conversa boa</span></div>
+        </div>
+        <div class="gallery-item reveal reveal-delay-3">
+          <img src="9.jpg" alt="Clientes tirando selfie no Espetteco" loading="lazy">
+          <div class="gallery-overlay"><span>📸 Selfie no Espetteco</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contato -->
+  <section id="contato" aria-label="Contato do Espetteco">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:48px;">
+        <span class="section-label">Fale conosco</span>
+        <h2 class="section-title">Contato</h2>
+      </div>
+      <div class="contato-grid">
+        <div class="contato-info reveal">
+          <div class="double-bezel" style="padding:28px;">
+            <div class="contato-item">
+              <span class="contato-item-icon" aria-hidden="true">📍</span>
+              <div>
+                <div class="contato-item-label">Endereço</div>
+                <div class="contato-item-value">Rua do Pombal, Santo Amaro — Recife, PE<br><span style="font-size:0.85rem;color:var(--muted);">(ao lado do Senac)</span></div>
+              </div>
+            </div>
+            <div class="contato-item" style="margin-top:16px;">
+              <span class="contato-item-icon" aria-hidden="true">📱</span>
+              <div>
+                <div class="contato-item-label">WhatsApp</div>
+                <div class="contato-item-value">(81) 99577-6172</div>
+              </div>
+            </div>
+            <div class="contato-item" style="margin-top:16px;">
+              <span class="contato-item-icon" aria-hidden="true">🕐</span>
+              <div>
+                <div class="contato-item-label">Horários</div>
+                <div class="contato-item-value">Seg–Sex: 17h às 23h<br>Sáb: 10h às 17h</div>
+              </div>
+            </div>
+          </div>
+          <a href="https://wa.me/5581995776172?text=Olá!%20Vim%20pelo%20site%20do%20Espetteco%20e%20quero%20falar%20com%20vocês." target="_blank" rel="noopener" class="contato-btn" aria-label="Falar no WhatsApp">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Falar no WhatsApp
+          </a>
+        </div>
+        <div class="reveal reveal-delay-1">
+          <div class="contato-map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.0!2d-34.8811!3d-8.0578!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDMnMjguMSJTIDM0wrA1MicyOS4yIlc!5e0!3m2!1spt-BR!2sbr!4v1" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa do Espetteco — Santo Amaro, Recife"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" aria-label="Perguntas frequentes" style="background: var(--surface);">
+    <div class="container">
+      <div style="text-align:center; margin-bottom:48px;">
+        <span class="section-label">FAQ</span>
+        <h2 class="section-title">Dúvidas Frequentes</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFaq(this)">
+            Precisa agendar?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">Não é necessário agendar, mas recomendamos para grupos grandes — assim garantimos o melhor atendimento e uma mesa reservada para vocês.</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFaq(this)">
+            Fazem delivery?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">Sim! Entregamos em Santo Amaro e região. É só pedir pelo WhatsApp que a gente prepara tudo com o mesmo carinho da casa.</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-2">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFaq(this)">
+            Aceita cartão?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">Sim, aceitamos cartão de crédito e débito, Pix e dinheiro. Todas as formas pra facilitar sua vida.</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-3">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFaq(this)">
+            Tem estacionamento?
+            <span class="faq-icon" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">Estacionamento na rua, área comercial tranquila. Também é super fácil chegar de Uber ou transporte público.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">Espette<span>co</span></div>
+        <p class="footer-desc">O verdadeiro espetinho na brasa em Santo Amaro, Recife. Carnes nobres, cerveja gelada e o melhor happy hour da região.</p>
+      </div>
+      <div>
+        <div class="footer-title">Redes</div>
+        <div class="footer-links">
+          <a href="https://www.instagram.com/espetteco/" target="_blank" rel="noopener" aria-label="Instagram do Espetteco">📸 Instagram</a>
+          <a href="https://wa.me/5581995776172" target="_blank" rel="noopener" aria-label="WhatsApp do Espetteco">💬 WhatsApp</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-title">Links</div>
+        <div class="footer-links">
+          <a href="#sobre" aria-label="Ir para Sobre">Sobre</a>
+          <a href="#cardapio" aria-label="Ir para Cardápio">Cardápio</a>
+          <a href="#contato" aria-label="Ir para Contato">Contato</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2024 Espetteco. Todos os direitos reservados.
+    </div>
+  </footer>
+
+  <!-- Bottom WhatsApp Bar (mobile) -->
+  <div class="whatsapp-bar" aria-label="WhatsApp flutuante">
+    <a href="https://wa.me/5581995776172?text=Olá!%20Vim%20pelo%20site%20do%20Espetteco%20e%20quero%20fazer%20um%20pedido." target="_blank" rel="noopener" aria-label="Fazer pedido pelo WhatsApp">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Fazer Pedido
+    </a>
+  </div>
+
+  <script>
+    // ===== CUSTOM CURSOR =====
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (dot && ring && window.innerWidth > 768) {
+      let mouseX = 0, mouseY = 0;
+      let ringX = 0, ringY = 0;
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+      });
+      function animateRing() {
+        ringX += (mouseX - ringX) * 0.12;
+        ringY += (mouseY - ringY) * 0.12;
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+        requestAnimationFrame(animateRing);
+      }
+      animateRing();
+      document.querySelectorAll('a, button, .menu-card, .gallery-item, .double-bezel').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+      });
+    }
+
+    // ===== NAV TOGGLE =====
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        const open = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', open);
+      });
+      navLinks.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    // ===== NAV SCROLL EFFECT =====
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ===== SCROLL REVEAL =====
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ===== COUNT-UP ANIMATION =====
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.getAttribute('data-count'), 10);
+          if (!target) return;
+          let current = 0;
+          const step = Math.ceil(target / 40);
+          const interval = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              current = target;
+              clearInterval(interval);
+            }
+            el.textContent = current + '+';
+          }, 40);
+          countObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => countObserver.observe(el));
+
+    // ===== FAQ TOGGLE =====
+    function toggleFaq(btn) {
+      const item = btn.parentElement;
+      const isOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item.open').forEach(el => {
+        el.classList.remove('open');
+        el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        item.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    // ===== FIRE PARTICLES =====
+    const particlesContainer = document.getElementById('fireParticles');
+    if (particlesContainer) {
+      for (let i = 0; i < 20; i++) {
+        const p = document.createElement('div');
+        p.className = 'fire-particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (2 + Math.random() * 3) + 's';
+        p.style.animationDelay = Math.random() * 4 + 's';
+        p.style.width = (2 + Math.random() * 4) + 'px';
+        p.style.height = p.style.width;
+        p.style.background = Math.random() > 0.5 ? '#ea580c' : '#f97316';
+        particlesContainer.appendChild(p);
+      }
+    }
+
+    // ===== ACTIVE NAV LINK =====
+    const sections = document.querySelectorAll('section[id]');
+    const navAnchors = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const top = section.offsetTop - 120;
+        if (window.scrollY >= top) current = section.getAttribute('id');
+      });
+      navAnchors.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+</body>
+</html>
